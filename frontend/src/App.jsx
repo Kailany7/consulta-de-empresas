@@ -1,48 +1,61 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import BuscaCnpj from './components/BuscaCnpj';
 import ResultadoEmpresa from './components/ResultadoEmpresa';
 import Historico from './components/Historico';
+import { buscarEmpresa, buscarHistorico } from './services/api';
+import './App.css';
 
 function App() {
-  const [estado, setEstado] = useState('vazio'); // vazio | carregando | erro | sucesso
-  const [ultimoCnpjBuscado, setUltimoCnpjBuscado] = useState('');
+  const [resultado, setResultado] = useState(null);
+  const [carregando, setCarregando] = useState(false);
+  const [erro, setErro] = useState(null);
+  const [historico, setHistorico] = useState([]);
 
-  const resultadoFalso = {
-    razaoSocial: 'EMPRESA TESTE LTDA',
-    nomeFantasia: 'Teste',
-    situacao: 'ATIVA',
-    cnae: 'Testes de software',
-    dataAbertura: '2020-01-01',
-    endereco: 'Rua Teste, 123 - Centro, São Paulo/SP'
-  };
+  async function atualizarHistorico() {
+    try {
+      const dados = await buscarHistorico();
+      setHistorico(dados);
+    } catch {
+      // histórico não é crítico, falha silenciosa
+    }
+  }
 
-  const historicoFalso = [
-    { razaoSocial: 'EMPRESA TESTE LTDA', cnpj: '00.000.000/0000-00' },
-    { razaoSocial: 'OUTRA EMPRESA LTDA', cnpj: '11.111.111/1111-11' }
-  ];
+  useEffect(() => {
+    async function carregar() {
+      await atualizarHistorico();
+    }
+    carregar();
+  }, []);
 
-  function handleBuscar(cnpj) {
-    console.log('CNPJ recebido no App:', cnpj);
-    setUltimoCnpjBuscado(cnpj);
+  async function handleBuscar(cnpj) {
+    setCarregando(true);
+    setErro(null);
+    setResultado(null);
+
+    try {
+      const dados = await buscarEmpresa(cnpj);
+      setResultado(dados);
+      atualizarHistorico();
+    } catch (e) {
+      setErro(e.message);
+    } finally {
+      setCarregando(false);
+    }
   }
 
   return (
-    <div>
+    <div className="container">
+      <h1>Consulta de Empresas</h1>
+
       <BuscaCnpj onBuscar={handleBuscar} />
-      <p>Último CNPJ buscado (sem formatação): {ultimoCnpjBuscado}</p>
-
-      <hr />
-
-      <button onClick={() => setEstado('carregando')}>Simular carregando</button>
-      <button onClick={() => setEstado('erro')}>Simular erro</button>
-      <button onClick={() => setEstado('sucesso')}>Simular sucesso</button>
 
       <ResultadoEmpresa
-        carregando={estado === 'carregando'}
-        erro={estado === 'erro' ? 'CNPJ não encontrado' : null}
-        resultado={estado === 'sucesso' ? resultadoFalso : null}
+        resultado={resultado}
+        carregando={carregando}
+        erro={erro}
       />
-      <Historico consultas={historicoFalso} />
+
+      <Historico consultas={historico} />
     </div>
   );
 }

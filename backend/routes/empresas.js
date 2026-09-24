@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Consulta = require('../models/Consulta');
 
-let historico = [];
 const cache = new Map();
 const TEMPO_CACHE_MS = 5 * 60 * 1000; 
 

@@ -7,8 +7,8 @@ export default function Historico({ consultas }) {
     <div className="historico">
       <h3>Últimas consultas</h3>
       <ul>
-        {consultas.map((item, index) => (
-          <li key={index}>
+        {consultas.map((item) => (
+          <li key={item._id}>
             <span className="historico-razao">{item.razaoSocial}</span>
             <span className="historico-cnpj">{item.cnpj}</span>
           </li>

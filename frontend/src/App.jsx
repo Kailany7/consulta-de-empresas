@@ -44,7 +44,8 @@ function App() {
   }
 
   return (
-    <div className="container">
+    //PicoCSS,exige que o conteúdo principal esteja dentro de uma tag <main>
+    <main className="container"> 
       <h1>Consulta de Empresas</h1>
 
       <BuscaCnpj onBuscar={handleBuscar} />
@@ -56,7 +57,7 @@ function App() {
       />
 
       <Historico consultas={historico} />
-    </div>
+    </main>
   );
 }
 

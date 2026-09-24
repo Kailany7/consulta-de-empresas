@@ -14,14 +14,16 @@ export default function BuscaCnpj({ onBuscar }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="busca-form">
-      <input
-        type="text"
-        placeholder="00.000.000/0000-00"
-        value={cnpj}
-        onChange={handleChange}
-      />
-      <button type="submit">Buscar</button>
+    <form onSubmit={handleSubmit}>
+      <fieldset role="group">
+        <input
+          type="text"
+          placeholder="00.000.000/0000-00"
+          value={cnpj}
+          onChange={handleChange}
+        />
+        <button type="submit">Buscar</button>
+      </fieldset>
     </form>
   );
 }

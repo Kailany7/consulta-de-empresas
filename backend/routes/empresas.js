@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const Consulta = require('../models/Consulta');
 
 let historico = [];
 const cache = new Map();
@@ -52,8 +53,8 @@ router.get('/empresas/:cnpj', async (req, res) => {
     // salva no cache
     cache.set(cnpj, { dados: resultado, expiraEm: Date.now() + TEMPO_CACHE_MS });
 
-    historico.unshift(resultado);
-    historico = historico.slice(0, 5);
+       // salva no MongoDB em vez do array em memória
+    await Consulta.create(resultado);
 
     res.json(resultado);
 
@@ -62,7 +63,8 @@ router.get('/empresas/:cnpj', async (req, res) => {
   }
 });
 
-router.get('/historico', (req, res) => {
+router.get('/historico', async (req, res) => {
+  const historico = await Consulta.find().sort({ consultadoEm: -1 }).limit(5);
   res.json(historico);
 });
 

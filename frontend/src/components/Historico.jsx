@@ -9,7 +9,8 @@ export default function Historico({ consultas }) {
       <ul>
         {consultas.map((item, index) => (
           <li key={index}>
-            {item.razaoSocial} — {item.cnpj}
+            <span className="historico-razao">{item.razaoSocial}</span>
+            <span className="historico-cnpj">{item.cnpj}</span>
           </li>
         ))}
       </ul>
